@@ -27,10 +27,12 @@ other_tests=
 other_tests_x86_64=
 other_tests_x86_32=
 other_tests_aarch64=
+other_tests_loongarch64=
 other_tests_ppc64le=
 lsrc_x86_64=
 lsrc_x86_32=
 lsrc_aarch64=
+lsrc_loongarch64=
 lsrc_ppc64le=
 lsrc_base_aliases=
 lsrc32=
@@ -71,6 +73,11 @@ endif
 if CPU_AARCH64
 libisal_la_SOURCES += ${lsrc_aarch64}
 other_tests += ${other_tests_aarch64}
+endif
+
+if CPU_LOONGARCH64
+libisal_la_SOURCES += ${lsrc_loongarch64}
+other_tests += ${other_tests_loongarch64}
 endif
 
 if CPU_PPC64LE
@@ -138,6 +145,10 @@ if CPU_AARCH64
   as_filter = $(CC) -D__ASSEMBLY__
 endif
 
+if CPU_LOONGARCH64
+  as_filter = $(CC) -D__ASSEMBLY__ -mlsx -mlasx -march=loongarch64
+endif
+
 CCAS = $(as_filter)
 EXTRA_DIST += tools/yasm-filter.sh tools/nasm-filter.sh
 EXTRA_DIST += tools/yasm-cet-filter.sh tools/nasm-cet-filter.sh
@@ -147,6 +158,11 @@ if CPU_AARCH64
 AM_CCASFLAGS = ${AM_CFLAGS}
 else
 AM_CCASFLAGS = ${yasm_args} ${INCLUDE} ${src_include} ${DEFS} ${D}
+endif
+
+if CPU_LOONGARCH64
+AM_CCASFLAGS = ${AM_CFLAGS}
+AM_CFLAGS += -DEC_ALIGNED_ADDR -mlsx -mlasx -march=loongarch64
 endif
 
 .asm.s:
